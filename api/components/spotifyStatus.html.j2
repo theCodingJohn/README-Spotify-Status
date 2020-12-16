@@ -1,10 +1,7 @@
-<svg width="480" height="135" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <foreignObject width="480" height="135">
+<svg width="480" height="133" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <foreignObject width="480" height="133">
         <div xmlns="http://www.w3.org/1999/xhtml" class="container">
             <style>
-                body {
-                    margin: 0;
-                }
                 div {
                     font-family: Roboto;
                 }
@@ -50,14 +47,6 @@
                     font-weight: bold;
                     text-align: left;
                     margin-top: 3px;
-                }
-                 .song-title-long {
-                    font-size: 20px;
-                    color: #666;
-                    font-weight: bold;
-                    text-align: left;
-                    margin-top: 3px;
-                    margin-bottom: 30px;
                 }
                 .song-info {
                     float: left !important;
@@ -106,7 +95,7 @@
                   display: flex;
                   -webkit-box-align: end;
                           align-items: flex-end;
-                  width: {{spectrographWidth}}%;
+                  width: 100%;
                   height: 20px;
                   overflow: hidden;
                   -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cdefs%3E%3Cpattern id='spectrograph' x='0' y='0' width='6px' height='4px' patternUnits='userSpaceOnUse'%3E%3Crect x='0' y='2px' width='6px' height='2px' fill='%23000'/%3E%3C/pattern%3E%3C/defs%3E%3Crect x='0' y='0' width='100%25' height='100%25' fill='url(%23spectrograph)'%3E%3C/rect%3E%3C/svg%3E");
@@ -202,12 +191,11 @@
                   }
                 }
                 .ribbon {
-                  position: absolute !important;
+                  position: absolute;
                   right: -5px; top: -5px;
                   z-index: 1;
                   overflow: hidden;
-                  width: 75px;
-                  height: 75px;
+                  width: 75px; height: 75px;
                   text-align: right;
                 }
                 .ribbon span {
@@ -245,7 +233,6 @@
                   border-top: 3px solid #1DB954;
                 }
                 .spotify-logo {
-                    z-index: 1;
                     width:52%;
                     height: 52%;
                     margin-bottom:-3px;
@@ -268,112 +255,43 @@
                   color: white;
                   font-size: 20px;
                 }
-                .duration {
-                    font-family: Roboto;
-                    position:fixed;
-                    width:30px;
-                    margin-left: -50px;
-                    margin-top: 78px;
-                    background-color: #9c9c9c;
-                    border-radius: 5px;
-                    font-size: 13px;
-                    color:white;
-                    vertical-align: baseline;
-                    padding:2px 0px 2px 6px;
-                }
-                .title {
-                  margin: 0 auto;
-                  white-space: nowrap;
-                  overflow: hidden;
-                  position: absolute;
-                  width:68%;
-                }
-                .title span {
-                  display: inline-block;
-                  padding-left: 100%;
-                  animation: marquee 10s linear infinite;
-                }
-                .title-animation span {
-                  animation-delay:0s;
-                }
-                @keyframes marquee {
-                  0% {
-                    transform: translate(0, 0);
-                  }
-                  100% {
-                    transform: translate(-100%, 0);
-                  }
-                }
                 {{soundVisualizerCSS|safe}}
             </style>
-             <body onload="startTimer({{duration}});">
-                 {% if songName %}
-                    <div class="main">
-                        <div class="ribbon">
-                            <span>
-                                <img src="data:image/png;base64, {{spotifyIcon}}" class="spotify-logo"/>
-                            </span>
-                        </div>
-                        <a class="art" href="{}" target="_BLANK">
-                            <center>
-                                    <img src="data:image/png;base64, {{albumCover}}" class="album-cover rotate" />
-                                    <div class="centered">⦿</div>
-                            </center>
-                        </a>
-                        <div class="text">
-                            <div class="song-info">
-                                {% if viewAnimation %}
-                                    <div class="song-title-long">
-                                        <p class="title title-animation">
-                                          <span>{{songName}}</span>
-                                        </p>
-                                    </div>
-                                {% else %}
-                                    <div class="song">
-                                        <span>{{songName}}</span>
-                                    </div>
-                                {% endif %}
 
-                                <div class="artist">{{artistName}}
-                                {% if explicit %}
-                                    <span class="explicit-music">EXPLICIT</span>
-                                {% endif %}
-                                </div>
-                            </div>
-                            <div class="spectrograph">
-                                {{soundVisualizerBar|safe}}
-                            </div>
-                             {% if enableDuration == 'True' %}
-                                    <span id="music-time" class="duration">{{default_duration}}</span>
-                             {% endif %}
+            {% if songName %}
+
+            <div class="main">
+                <div class="ribbon">
+                    <span>
+                        <img src="data:image/png;base64, {{spotifyIcon}}" class="spotify-logo"/>
+                    </span>
+                </div>
+                <a class="art" href="{}" target="_BLANK">
+                    <center>
+                            <img src="data:image/png;base64, {{albumCover}}" class="album-cover rotate" />
+                            <div class="centered">⦿</div>
+                    </center>
+                </a>
+                <div class="text">
+                    <div class="song-info">
+                        <div class="song">{{songName}}</div>
+                        <div class="artist">{{artistName}}
+                        {% if explicit %}
+                            <span class="explicit-music">EXPLICIT</span>
+                        {% endif %}
                         </div>
                     </div>
+
+                    <div class="spectrograph">
+                        {{soundVisualizerBar|safe}}
+                    </div>
+                </div>
+
                 {% else %}
                     <div class="playing not-play">Nothing playing on Spotify</div>
                 {% endif %}
-             </body>
+            </div>
+
         </div>
-        <script>
-            function startTimer(duration) {
-              var minute = Math.floor(duration / 60000);
-              var sec = ((duration % 60000) / 1000).toFixed(0);
-              var musicTimer = setInterval(function() {
-                if(minute == -1){
-                    minute = 0
-                    sec = 0
-                    clearInterval(musicTimer)
-                }
-                if(!(parseInt(sec.toString()) > 9)) {
-                    sec = "0" + parseInt(sec.toString())
-                }
-                document.querySelector('#music-time').textContent = minute + ":" + sec;
-                sec--;
-                if (sec == 00) {
-                  minute --;
-                  sec = 60;
-                }
-              }, 1000);
-            }
-        </script>
     </foreignObject>
 </svg>
