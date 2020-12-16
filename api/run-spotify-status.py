@@ -14,7 +14,6 @@ SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_SECRET_ID = os.getenv("SPOTIFY_SECRET_ID")
 SPOTIFY_REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN")
 SPOTIFY_BAR_COLOR = os.getenv("SPOTIFY_BAR_COLOR")
-SPOTIFY_ENABLE_DURATION = os.getenv("SPOTIFY_ENABLE_DURATION")
 
 app = Flask(__name__, template_folder="components")
 
@@ -48,7 +47,9 @@ def recentlyPlayed():
 
 def nowPlaying():
     token = refreshToken()
+
     headers = {"Authorization": f"Bearer {token}"}
+
     response = requests.get(SPOTIFY_URL_NOW_PLAYING, headers=headers)
 
     if response.status_code == 204:
@@ -59,7 +60,7 @@ def nowPlaying():
 
 def soundVisualizer(soundBars):
     soundVisualizerCSS = ""
-    START_BAR = 1700  # default: 1700
+    START_BAR = 1700
     ANIMATIONS = ['animation1', 'animation2', 'animation3']
     for NTH in range(1, soundBars + 1):
         START_BAR += 100
@@ -83,50 +84,11 @@ def convertMsToMin(ms):
     return str("%d:%d" % (minutes, seconds))
 
 
-def spectrographWidth():
-    if SPOTIFY_ENABLE_DURATION == 'True':
-        return 52
-    return 98
-
-
-def setSpotifyObject(item):
+def makeSVG(data):
     soundBars = 41
     soundVisualizerBar = "".join(["<div class='spectrograph__bar'></div>" for i in range(soundBars)])
     soundVisualizerCSS = soundVisualizer(soundBars)
 
-    duration = item["duration_ms"]
-    default_duration = convertMsToMin(duration)
-    musicLink = item["album"]["external_urls"]
-    musicTime = convertMsToMin(item["duration_ms"])
-    explicit = item["explicit"]
-    albumCover = loadImageB64(item["album"]["images"][1]["url"])
-    artistName = item["artists"][0]["name"].replace("&", "&amp;")
-    songName = item["name"].replace("&", "&amp;")
-    spotifyIcon = loadImageB64("https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_White.png")
-    viewAnimation = len(songName) > 27
-
-    spotifyObject = {
-        "enableDuration": SPOTIFY_ENABLE_DURATION,
-        "spectrographWidth": spectrographWidth(),
-        "duration": duration,
-        "default_duration": default_duration,
-        "soundVisualizerBar": soundVisualizerBar,
-        "soundVisualizerCSS": soundVisualizerCSS,
-        "artistName": artistName,
-        "spotifyIcon": spotifyIcon,
-        "viewAnimation":viewAnimation,
-        "songName": songName,
-        "albumCover": albumCover,
-        "barColor": SPOTIFY_BAR_COLOR,
-        "explicit": explicit,
-        "musicTime": musicTime,
-        "musicLink": musicLink
-    }
-    return spotifyObject
-
-
-def makeSVG(data):
-    print(data)
     if data == {}:
         recent_plays = recentlyPlayed()
         size_recent_play = len(recent_plays["items"])
@@ -134,9 +96,27 @@ def makeSVG(data):
         item = recent_plays["items"][idx]["track"]
     else:
         item = data["item"]
-    print(item)  # when ads on its None fix maybe
 
-    spotifyObject = setSpotifyObject(item)
+    musicLink = item["album"]["external_urls"]
+    musicTime = convertMsToMin(item["duration_ms"])
+    explicit = item["explicit"]
+    albumCover = loadImageB64(item["album"]["images"][1]["url"])
+    artistName = item["artists"][0]["name"].replace("&", "&amp;")
+    songName = item["name"].replace("&", "&amp;")
+    spotifyIcon = loadImageB64("https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_White.png")
+
+    spotifyObject = {
+        "soundVisualizerBar": soundVisualizerBar,
+        "soundVisualizerCSS": soundVisualizerCSS,
+        "artistName": artistName,
+        "spotifyIcon": spotifyIcon,
+        "songName": songName,
+        "albumCover": albumCover,
+        "barColor": SPOTIFY_BAR_COLOR,
+        "explicit": explicit,
+        "musicTime": musicTime,
+        "musicLink": musicLink
+    }
 
     return render_template("spotifyStatus.html.j2", **spotifyObject)
 
